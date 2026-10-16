@@ -1,4 +1,4 @@
-# Python
+﻿# Python
 __pycache__/
 *.py[cod]
 backend/test_output.txt
@@ -16,4 +16,5 @@ GIAI_THICH_BACKEND.md
 KE_HOACH_DO_AN.md
 *.pdf
 
-</new_text>
+# C++ solver reference (chỉ dùng local)
+Solver.cpp
