@@ -1,0 +1,239 @@
+/* style.css - Định dạng giao diện cho Water Sort Puzzle AI Solver */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    color: #333;
+}
+
+h1 {
+    color: #fff;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    margin-bottom: 20px;
+    font-size: 28px;
+}
+
+.controls {
+    background: white;
+    padding: 15px 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    margin-bottom: 20px;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 900px;
+    width: 100%;
+}
+
+.controls label {
+    font-weight: bold;
+    color: #34495e;
+    font-size: 14px;
+}
+
+.controls input[type="number"],
+.controls select {
+    padding: 8px 12px;
+    border: 2px solid #bdc3c7;
+    border-radius: 6px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.3s;
+    width: 80px;
+}
+
+.controls select {
+    width: 140px;
+}
+
+.controls input[type="number"]:focus,
+.controls select:focus {
+    border-color: #3498db;
+}
+
+.controls button {
+    padding: 10px 20px;
+    background: #3498db;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    transition: all 0.2s ease;
+}
+
+.controls button:hover {
+    background: #2980b9;
+    transform: translateY(-1px);
+}
+
+.controls button.solve-btn {
+    background: #27ae60;
+    font-size: 16px;
+    padding: 10px 30px;
+}
+
+.controls button.solve-btn:hover {
+    background: #219a52;
+}
+
+.color-palette {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.color-count {
+    margin-right: 4px;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+.color-swatch {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 3px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.color-swatch:hover {
+    transform: scale(1.15);
+}
+
+.color-swatch.active {
+    border-color: #2c3e50;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    transform: scale(1.2);
+}
+
+.tubes-container {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 20px;
+    padding: 30px;
+    background: rgba(255,255,255,0.95);
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    max-width: 900px;
+    width: 100%;
+    min-height: 200px;
+}
+
+.tube-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.tube-label {
+    font-weight: bold;
+    color: #7f8c8d;
+    font-size: 12px;
+}
+
+.tube {
+    width: 45px;
+    border: 3px solid #7f8c8d;
+    border-top: none;
+    border-radius: 0 0 22px 22px;
+    display: flex;
+    flex-direction: column-reverse;
+    overflow: hidden;
+    background: rgba(255,255,255,0.5);
+    cursor: pointer;
+    transition: border-color 0.2s;
+}
+
+.tube:hover {
+    border-color: #3498db;
+}
+
+.color-block {
+    width: 100%;
+    height: 30px;
+    border-top: 1px solid rgba(255,255,255,0.3);
+    transition: background-color 0.3s ease;
+}
+
+.process-panel {
+    flex-direction: column;
+    text-align: center;
+}
+
+.step-info {
+    font-size: 16px;
+    font-weight: bold;
+    color: #e74c3c;
+    margin-bottom: 15px;
+    min-height: 24px;
+}
+
+.nav-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.nav-buttons button {
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    color: white;
+    transition: all 0.2s ease;
+}
+
+#btnPrev {
+    background: #3498db;
+}
+
+#btnPrev:hover:not(:disabled) {
+    background: #2980b9;
+}
+
+#btnNext {
+    background: #3498db;
+}
+
+#btnNext:hover:not(:disabled) {
+    background: #2980b9;
+}
+
+#btnAutoPlay {
+    background: #f39c12;
+}
+
+#btnAutoPlay:hover {
+    background: #d68910;
+}
+
+button:disabled {
+    background: #bdc3c7 !important;
+    color: #7f8c8d !important;
+    cursor: not-allowed !important;
+    transform: none !important;
+    box-shadow: none !important;
+}

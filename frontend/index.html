@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<!-- index.html - Giao diện chính của ứng dụng Water Sort Puzzle AI Solver -->
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Water Sort Puzzle - AI Solver</title>
+    <!-- Liên kết tới file CSS bên ngoài, có version để tránh cache -->
+    <link rel="stylesheet" href="style.css?v=5">
+</head>
+<body>
+
+    <h1>🧪 Water Sort Puzzle - AI Solver</h1>
+
+    <!-- Panel nhập liệu cấu hình -->
+    <div class="controls">
+        <label>Số ống (N):</label>
+        <input type="number" id="numTubes" value="3" min="2" max="15">
+        
+        <label>Sức chứa mỗi ống:</label>
+        <input type="number" id="capacityInput" value="4" min="1" max="10">
+        
+        <label>Thuật toán:</label>
+        <select id="algoSelect">
+            <option value="bfs">BFS (Tối ưu)</option>
+            <option value="dfs">DFS (Chiều sâu)</option>
+            <option value="astar">A* (Heuristic)</option>
+        </select>
+        
+        <button id="btnReset" onclick="generateEmptyTubes()">🔄 Tạo ống rỗng</button>
+        <button id="btnSolve" class="solve-btn" onclick="solvePuzzle()">⚡ GIẢI</button>
+    </div>
+
+    <!-- Bảng màu -->
+    <div class="controls">
+        <label>Chọn màu rồi click vào ống để thêm:</label>
+        <div id="colorPalette" class="color-palette"></div>
+    </div>
+
+    <!-- Khu vực render các ống nghiệm -->
+    <div id="tubesContainer" class="tubes-container"></div>
+
+    <!-- Panel điều khiển quá trình giải -->
+    <div class="controls process-panel">
+        <div id="stepInfo" class="step-info">Chưa có lời giải.</div>
+        <div class="nav-buttons">
+            <button id="btnPrev" onclick="prevStep()" disabled>⬅ Lùi</button>
+            <button id="btnAutoPlay" onclick="autoPlay()">▶ Auto Play</button>
+            <button id="btnNext" onclick="nextStep()" disabled>Tiến ➡</button>
+        </div>
+    </div>
+
+    <!-- Liên kết tới file JavaScript, có version để tránh cache -->
+    <script src="script.js?v=5"></script>
+</body>
+</html>
