@@ -70,7 +70,7 @@ cd backend
 python app.py
 ```
 
-The API listens on `http://127.0.0.1:5000`. Open `frontend/index.html` directly or serve the frontend with a local static server.
+The API listens on `http://localhost:5000`. Open `frontend/index.html` directly or serve the frontend with a local static server.
 
 ## API
 

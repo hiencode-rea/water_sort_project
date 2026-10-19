@@ -97,28 +97,12 @@ def api_solve():
     })
 
 if __name__ == '__main__':
-    # Chạy máy chủ Flask ở chế độ debug (tự động reload khi sửa code), lắng nghe trên cổng 5000
-    import socket
-
-    def get_lan_ip():
-        try:
-            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            s.connect(('8.8.8.8', 80))
-            ip = s.getsockname()[0]
-            s.close()
-            return ip
-        except Exception:
-            return '127.0.0.1'
-
-    lan_ip = get_lan_ip()
+    # Chạy máy chủ Flask cục bộ trên localhost, cổng 5000.
     print('=' * 50)
     print('  WATER SORT PUZZLE - AI SOLVER SERVER')
     print('=' * 50)
-    print(f'  Local:   http://127.0.0.1:5000')
-    print(f'  LAN:     http://{lan_ip}:5000')
+    print('  Local:   http://localhost:5000')
     print(f'  Frontend: Mo file frontend/index.html tren trinh duyet')
-    print(f'  Nhap IP {lan_ip} vao o Server IP tren giao dien')
     print('=' * 50)
 
-    # host=0.0.0.0 cho phep thiet bi khac trong mang LAN truy cap
-    app.run(host='0.0.0.0', debug=True, port=5000)
+    app.run(host='127.0.0.1', debug=True, port=5000)

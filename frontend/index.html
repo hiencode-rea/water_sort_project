@@ -21,7 +21,6 @@
         <section class="workspace" aria-label="Thiết lập bài toán">
             <div class="section-heading"><div><span class="section-index">01</span><h2>Thiết lập bài toán</h2></div><p>Điều chỉnh thông số trước khi tạo bàn chơi.</p></div>
             <div class="controls setup-controls">
-                <label for="serverIp">Server IP</label><input type="text" id="serverIp" value="127.0.0.1" placeholder="10.13.129.165">
                 <label for="numTubes">Số ống <span>N</span></label><input type="number" id="numTubes" value="3" min="2" max="15">
                 <label for="capacityInput">Sức chứa <span>C</span></label><input type="number" id="capacityInput" value="4" min="1" max="10">
                 <label for="algoSelect">Thuật toán</label><select id="algoSelect"><option value="bfs">BFS · Tối ưu</option><option value="dfs">DFS · Chiều sâu</option><option value="astar">A* · Heuristic</option></select>
@@ -30,7 +29,6 @@
                 <button id="btnSolve" class="button button-primary solve-btn" onclick="solvePuzzle()"><span>Giải bài toán</span><b>↗</b></button>
             </div>
         </section>
-        <div id="lanBanner" class="lan-banner" style="display:none;">LAN mode: enter the server IP above on devices connected to the same network.</div>
         <section class="workspace palette-panel" aria-label="Chọn màu">
             <div class="section-heading compact-heading"><div><span class="section-index">02</span><h2>Phối màu</h2></div><p>Chọn một màu rồi nhấn vào ống để thêm từng lớp.</p></div>
             <div class="palette-row"><div id="colorPalette" class="color-palette"></div><span class="palette-hint">Mỗi màu cần đủ số lớp bằng sức chứa.</span></div>

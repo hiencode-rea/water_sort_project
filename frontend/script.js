@@ -17,19 +17,9 @@ let stepIndex = 0;
 
 // Biến lưu interval ID cho chức năng Auto Play (để có thể dừng lại)
 let autoPlayInterval = null;
-/**
- * Lấy URL API Backend dựa trên IP người dùng nhập trong ô Server IP.
- * Hỗ trợ cả localhost và LAN network.
- */
+/** Return the local Flask API endpoint. */
 function getApiUrl() {
-    var ipInput = document.getElementById('serverIp');
-    var ip = ipInput ? ipInput.value.trim() : '127.0.0.1';
-    if (!ip) ip = '127.0.0.1';
-    // Xóa http:// hoặc https:// nếu người dùng nhập thừa
-    ip = ip.replace(/^https?:\/\//, '');
-    // Xóa trailing slash
-    ip = ip.replace(/\/$/, '');
-    return 'http://' + ip + ':5000/api/solve';
+    return 'http://localhost:5000/api/solve';
 }
 
 
