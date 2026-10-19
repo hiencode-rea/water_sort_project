@@ -17,6 +17,22 @@ let stepIndex = 0;
 
 // Biến lưu interval ID cho chức năng Auto Play (để có thể dừng lại)
 let autoPlayInterval = null;
+/**
+ * Lấy URL API Backend dựa trên IP người dùng nhập trong ô Server IP.
+ * Hỗ trợ cả localhost và LAN network.
+ */
+function getApiUrl() {
+    var ipInput = document.getElementById('serverIp');
+    var ip = ipInput ? ipInput.value.trim() : '127.0.0.1';
+    if (!ip) ip = '127.0.0.1';
+    // Xóa http:// hoặc https:// nếu người dùng nhập thừa
+    ip = ip.replace(/^https?:\/\//, '');
+    // Xóa trailing slash
+    ip = ip.replace(/\/$/, '');
+    return 'http://' + ip + ':5000/api/solve';
+}
+
+
 
 /**
  * Sự kiện window.onload: Chạy khi toàn bộ trang web đã load xong.
@@ -233,7 +249,7 @@ function solvePuzzle() {
     document.getElementById('btnSolve').disabled = true;
     document.getElementById('stepInfo').innerText = 'Đang giải...';
 
-    fetch('http://127.0.0.1:5000/api/solve', {
+    fetch(getApiUrl(), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)

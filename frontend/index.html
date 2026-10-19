@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Water Sort Puzzle - AI Solver</title>
     <!-- Liên kết tới file CSS bên ngoài, có version để tránh cache -->
-    <link rel="stylesheet" href="style.css?v=5">
+    <link rel="stylesheet" href="style.css?v=6">
 </head>
 <body>
 
@@ -14,6 +14,9 @@
 
     <!-- Panel nhập liệu cấu hình -->
     <div class="controls">
+        <label>Server IP:</label>
+        <input type="text" id="serverIp" value="127.0.0.1" placeholder="VD: 10.13.129.165" style="width:140px;">
+
         <label>Số ống (N):</label>
         <input type="number" id="numTubes" value="3" min="2" max="15">
         
@@ -37,6 +40,11 @@
         <div id="colorPalette" class="color-palette"></div>
     </div>
 
+    <!-- LAN Banner -->
+    <div id="lanBanner" style="display:none;background:#2ecc71;color:#fff;padding:8px 16px;text-align:center;font-size:14px;border-radius:6px;margin:8px auto;max-width:700px;">
+        🌐 Chế độ LAN: Nhập IP máy chủ vào ô <b>Server IP</b> trên mọi thiết bị cùng mạng.
+    </div>
+
     <!-- Khu vực render các ống nghiệm -->
     <div id="tubesContainer" class="tubes-container"></div>
 
@@ -51,6 +59,6 @@
     </div>
 
     <!-- Liên kết tới file JavaScript, có version để tránh cache -->
-    <script src="script.js?v=5"></script>
+    <script src="script.js?v=6"></script>
 </body>
 </html>
