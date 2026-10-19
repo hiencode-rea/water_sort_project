@@ -3,7 +3,7 @@
 from flask import Flask, request, jsonify      # Nhập Flask để tạo web server, request để nhận dữ liệu, jsonify để trả JSON
 from flask_cors import CORS                     # Nhập CORS để cho phép Frontend (khác domain/port) gọi API
 from state import WaterSortState                # Nhập lớp biểu diễn trạng thái từ file state.py
-from solver import solve_bfs, solve_dfs, solve_astar  # Nhập 3 hàm giải thuật toán từ file solver.py
+from solver import solve_bfs, solve_dfs, solve_astar, solve_with_trace  # Nhập 3 hàm giải thuật toán
 
 app = Flask(__name__)   # Khởi tạo ứng dụng Flask
 CORS(app)               # Kích hoạt CORS cho toàn bộ các route của ứng dụng, giúp Frontend gọi API không bị chặn
@@ -71,13 +71,19 @@ def api_solve():
         path, state_checked = solve_astar(initial_state)
     else:
         return jsonify({'status': 'invalid', 'error': 'Thuật toán không hợp lệ.'}), 400
+
+    # Tạo trace riêng cho giao diện cây tìm kiếm và bảng Open/Closed.
+    # Giữ lời gọi solver legacy phía trên để không phá vỡ metric/test hiện tại.
+    _, _, search_trace = solve_with_trace(initial_state, algorithm)
         
     # Kiểm tra kết quả: nếu path là None tức là thuật toán đã duyệt hết mà không tìm thấy Goal
     if path is None:
         return jsonify({
             'status': 'no_solution',
             'message': 'Khong tim thay loi giai',
-            'states_checked': state_checked
+            'states_checked': state_checked,
+            'algorithm': algorithm,
+            'search_trace': search_trace
         })
         
     # Nếu tìm thấy lời giải -> đóng gói kết quả thành JSON và trả về cho Frontend
@@ -86,7 +92,8 @@ def api_solve():
         'total_steps': len(path),
         'solution_path': path,
         'states_checked': state_checked,
-        'algorithm': algorithm
+        'algorithm': algorithm,
+        'search_trace': search_trace
     })
 
 if __name__ == '__main__':

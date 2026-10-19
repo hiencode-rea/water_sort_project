@@ -138,11 +138,11 @@ def matrix_to_str(tubes):
     Ví dụ: (('Red','Blue'), ('Green',), ()) -> "RB|G||"
     Quy ước: dùng ký tự đầu của màu để tạo string ngắn gọn.
     """
-    parts = []
-    for tube in tubes:
-        s = ''.join(c[0] if c else '.' for c in tube) if tube else ''
-        parts.append(s)
-    return '|'.join(parts)
+    # Không được dùng ký tự đầu tiên của màu: các mã hex như
+    # '#e74c3c' và '#3498db' đều bắt đầu bằng '#', gây collision key
+    # và khiến A* loại nhầm các trạng thái khác nhau.
+    # Dùng repr đầy đủ để mỗi màu và thứ tự từng ống được phân biệt tuyệt đối.
+    return repr(tuple(tuple(tube) for tube in tubes))
 
 
 def count_color_breaks(state):
@@ -255,3 +255,119 @@ def solve_astar(initial_state):
 
     # openList empty -> no solution exists
     return None, state_checked
+
+
+def _trace_state_payload(state, node_id, parent_id, move, g_cost, h_cost, status):
+    """Đóng gói một node tìm kiếm để frontend có thể vẽ cây và bảng Open/Closed."""
+    return {
+        'id': node_id,
+        'parent': parent_id,
+        'state': [list(tube) for tube in state.tubes],
+        'move': list(move) if move else None,
+        'g': g_cost,
+        'h': h_cost,
+        'f': g_cost + h_cost,
+        'status': status
+    }
+
+
+def solve_with_trace(initial_state, algorithm='bfs'):
+    """Chạy solver và trả thêm timeline Open/Closed phục vụ giao diện trực quan.
+
+    Hàm này không thay đổi các solver legacy ở phía trên; nó chỉ dùng chung luật
+    sinh trạng thái từ WaterSortState và trả về (path, state_checked, trace).
+    """
+    if algorithm not in ('bfs', 'dfs', 'astar'):
+        raise ValueError('Thuật toán không hợp lệ.')
+
+    nodes = []
+    timeline = []
+    next_id = 0
+    root_h = count_color_breaks(initial_state) if algorithm == 'astar' else 0
+    root = _trace_state_payload(initial_state, next_id, None, None, 0, root_h, 'open')
+    nodes.append(root)
+
+    if algorithm == 'bfs':
+        frontier = deque([(initial_state, 0, [], 0)])
+    elif algorithm == 'dfs':
+        frontier = [(initial_state, 0, [], 0)]
+    else:
+        frontier = [(root_h, 0, initial_state, [], 0, 0)]
+
+    discovered = {initial_state: 0}
+    closed = []
+    state_checked = 0
+    goal_id = None
+
+    def snapshot(active_id=None):
+        open_ids = []
+        if algorithm == 'astar':
+            open_ids = [item[1] for item in frontier]
+        else:
+            open_ids = [item[1] for item in frontier]
+        timeline.append({'step': len(timeline), 'active': active_id, 'open': open_ids, 'closed': list(closed)})
+
+    while frontier:
+        if algorithm == 'bfs':
+            current, node_id, path, g_cost = frontier.popleft()
+        elif algorithm == 'dfs':
+            current, node_id, path, g_cost = frontier.pop()
+        else:
+            f_cost, node_id, current, path, g_cost, _ = heapq.heappop(frontier)
+
+        state_checked += 1
+        nodes[node_id]['status'] = 'closed'
+        if node_id not in closed:
+            closed.append(node_id)
+        snapshot(node_id)
+
+        if current.is_goal():
+            goal_id = node_id
+            nodes[node_id]['status'] = 'goal'
+            break
+
+        next_states, moves = current.get_next_moves()
+        children = []
+        for next_state, move in zip(next_states, moves):
+            next_g = g_cost + 1
+            previous_g = discovered.get(next_state)
+            if previous_g is not None and next_g >= previous_g:
+                continue
+            discovered[next_state] = next_g
+            next_id += 1
+            next_h = count_color_breaks(next_state) if algorithm == 'astar' else 0
+            node = _trace_state_payload(next_state, next_id, node_id, move, next_g, next_h, 'open')
+            nodes.append(node)
+            children.append((next_state, next_id, path + [move], next_g, next_h))
+
+        if algorithm == 'dfs':
+            for child in children:
+                frontier.append(child[:4])
+        elif algorithm == 'bfs':
+            for child in children:
+                frontier.append(child[:4])
+        else:
+            for child in children:
+                next_state, child_id, child_path, child_g, child_h = child
+                heapq.heappush(frontier, (child_g + child_h, child_id, next_state, child_path, child_g, child_h))
+        snapshot(node_id)
+
+    if not goal_id and initial_state.is_goal():
+        goal_id = 0
+        nodes[0]['status'] = 'goal'
+
+    path = None if goal_id is None else nodes[goal_id]['move']
+    if goal_id is not None:
+        path = []
+        cursor = goal_id
+        while nodes[cursor]['parent'] is not None:
+            path.append(tuple(nodes[cursor]['move']))
+            cursor = nodes[cursor]['parent']
+        path.reverse()
+
+    return path, state_checked, {
+        'nodes': nodes,
+        'timeline': timeline,
+        'goal_node': goal_id,
+        'algorithm': algorithm
+    }

@@ -11,9 +11,6 @@ backend/test_output.txt
 .DS_Store
 Thumbs.db
 
-# Tài liệu cá nhân (không push lên GitHub)
-GIAI_THICH_BACKEND.md
-KE_HOACH_DO_AN.md
 *.pdf
 
 # C++ solver reference (chỉ dùng local)
