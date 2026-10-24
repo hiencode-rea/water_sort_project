@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#08111f">
+    <title>Water Sort Lab — AI Solver</title>
+    <link rel="stylesheet" href="style.css?v=7">
+</head>
+<body>
+    <main class="app-shell">
+        <header class="hero">
+            <div class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></div>
+            <div>
+                <p class="eyebrow">ALGORITHM PLAYGROUND · 01</p>
+                <h1>Water Sort <em>Lab</em></h1>
+                <p class="hero-copy">Thiết lập bàn chơi, chọn thuật toán và quan sát lời giải được tái hiện từng bước.</p>
+            </div>
+            <div class="hero-status"><span class="status-dot"></span><span>Solver online</span></div>
+        </header>
+        <section class="workspace" aria-label="Thiết lập bài toán">
+            <div class="section-heading"><div><span class="section-index">01</span><h2>Thiết lập bài toán</h2></div><p>Điều chỉnh thông số trước khi tạo bàn chơi.</p></div>
+            <div class="controls setup-controls">
+                <label for="numTubes">Số ống <span>N</span></label><input type="number" id="numTubes" value="3" min="2" max="15">
+                <label for="capacityInput">Sức chứa <span>C</span></label><input type="number" id="capacityInput" value="4" min="1" max="10">
+                <label for="algoSelect">Thuật toán</label><select id="algoSelect"><option value="bfs">BFS · Tối ưu</option><option value="dfs">DFS · Chiều sâu</option><option value="astar">A* · Heuristic</option></select>
+                <button id="btnReset" class="button button-secondary" onclick="generateEmptyTubes()">Tạo bàn mới</button>
+                <button id="btnRandom" class="button button-secondary" onclick="generateRandomTestState()">Tạo test ngẫu nhiên</button>
+                <button id="btnSolve" class="button button-primary solve-btn" onclick="solvePuzzle()"><span>Giải bài toán</span><b>↗</b></button>
+            </div>
+        </section>
+        <section class="workspace palette-panel" aria-label="Chọn màu">
+            <div class="section-heading compact-heading"><div><span class="section-index">02</span><h2>Phối màu</h2></div><p>Chọn một màu rồi nhấn vào ống để thêm từng lớp.</p></div>
+            <div class="palette-row"><div id="colorPalette" class="color-palette"></div><span class="palette-hint">Mỗi màu cần đủ số lớp bằng sức chứa.</span></div>
+        </section>
+        <section class="board-section" aria-label="Bàn chơi">
+            <div class="section-heading board-heading"><div><span class="section-index">03</span><h2>Bàn chơi</h2></div><p>Nhấn vào một ống để đổ lớp màu đang chọn.</p></div>
+            <div id="tubesContainer" class="tubes-container"></div>
+        </section>
+        <section class="controls process-panel" aria-label="Điều khiển lời giải">
+            <div class="process-copy"><span class="live-line"><span class="status-dot"></span>LIVE TRACE</span><div id="stepInfo" class="step-info">Chưa có lời giải.</div></div>
+            <div class="nav-buttons"><button id="btnPrev" class="button button-secondary" onclick="prevStep()" disabled>← Lùi</button><button id="btnAutoPlay" class="button button-accent" onclick="autoPlay()">▶ Auto Play</button><button id="btnNext" class="button button-secondary" onclick="nextStep()" disabled>Tiến →</button></div>
+        </section>
+        <section class="explorer-section" aria-label="Cây tìm kiếm và cấu trúc dữ liệu">
+            <div class="section-heading board-heading">
+                <div><span class="section-index">04</span><h2>Search explorer</h2></div>
+                <p>Quan sát node đang mở rộng và trạng thái Open / Closed.</p>
+            </div>
+            <div class="explorer-toolbar">
+                <div class="trace-stat"><span>NODE</span><strong id="traceNodeCount">0</strong></div>
+                <div class="trace-stat"><span>OPEN</span><strong id="traceOpenCount">0</strong></div>
+                <div class="trace-stat"><span>CLOSED</span><strong id="traceClosedCount">0</strong></div>
+                <label class="trace-slider-label" for="traceSlider">Lịch sử tìm kiếm <output id="traceSliderValue">0</output></label>
+                <input id="traceSlider" class="trace-slider" type="range" min="0" max="0" value="0" disabled>
+            </div>
+            <div class="graph-legend" aria-label="Chú giải màu cây tìm kiếm">
+                <span><i class="legend-swatch legend-open"></i>Open</span>
+                <span><i class="legend-swatch legend-next"></i>Next expanded</span>
+                <span><i class="legend-swatch legend-explored"></i>Explored</span>
+                <span><i class="legend-swatch legend-goal"></i>Goal</span>
+                <span><i class="legend-swatch legend-path"></i>Goal path</span>
+                <span><i class="legend-swatch legend-pruned"></i>Depth pruned</span>
+            </div>
+            <div class="explorer-grid">
+                <div class="graph-panel">
+                    <div class="panel-caption"><span>CÂY TRẠNG THÁI</span><small>Click node để xem board</small></div>
+                    <div id="searchGraph" class="search-graph"><div class="empty-trace">Chạy solver để dựng cây tìm kiếm.</div></div>
+                </div>
+                <div class="lists-panel">
+                    <div class="data-table-card"><div class="panel-caption"><span>OPEN LIST</span><small id="openListMeta">0 node</small></div><div id="openListTable" class="state-table"><div class="empty-trace">Chưa có dữ liệu.</div></div></div>
+                    <div class="data-table-card"><div class="panel-caption"><span>CLOSED LIST</span><small id="closedListMeta">0 node</small></div><div id="closedListTable" class="state-table"><div class="empty-trace">Chưa có dữ liệu.</div></div></div>
+                </div>
+            </div>
+            <div id="selectedNodeInfo" class="selected-node-info">Chọn một node trên cây để xem trạng thái.</div>
+        </section>
+        <footer><span>WATER SORT LAB</span><span>AI SOLVER INTERFACE</span></footer>
+    </main>
+    <script src="script.js?v=7"></script>
+</body>
+</html>

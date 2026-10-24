@@ -17,8 +17,14 @@ let stepIndex = 0;
 
 // Biến lưu interval ID cho chức năng Auto Play (để có thể dừng lại)
 let autoPlayInterval = null;
-/** Return the local Flask API endpoint. */
+/** Return the deployed same-origin API or local Flask API. */
 function getApiUrl() {
+    // Use the same-origin Vercel Function in production, but keep the
+    // local Flask server workflow for file:// and localhost development.
+    const host = window.location.hostname;
+    if (window.location.protocol !== 'file:' && host !== 'localhost' && host !== '127.0.0.1') {
+        return '/api/solve';
+    }
     return 'http://localhost:5000/api/solve';
 }
 

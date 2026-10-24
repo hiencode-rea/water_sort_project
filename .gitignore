@@ -15,3 +15,7 @@ Thumbs.db
 
 # C++ solver reference (chỉ dùng local)
 Solver.cpp
+
+# Vercel local project metadata
+.vercel/
+.vercel
