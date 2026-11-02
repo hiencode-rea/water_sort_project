@@ -10,6 +10,10 @@
     font-size: 0.85rem;
 }
 .graph-node .node-card{stroke:#9aa3ad}.graph-node.closed .node-card{stroke:#e74c3c}.graph-node.open .node-card{stroke:#3498db}.graph-node.solution-node .node-card{stroke:#2ecc71}.graph-node.current-node .node-card{stroke:#f1c40f;filter:drop-shadow(0 0 7px rgba(241,196,15,.65))}
+.pour-stream-layer{position:fixed;inset:0;width:100vw;height:100vh;z-index:9999;overflow:visible;pointer-events:none}
+.pour-stream{fill:none;stroke-width:10;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;filter:drop-shadow(0 0 5px currentColor);animation:water-stream 680ms cubic-bezier(.35,0,.2,1) forwards}
+@keyframes water-stream{0%{stroke-dashoffset:1;opacity:.25}18%{opacity:1}78%{stroke-dashoffset:0;opacity:1}100%{stroke-dashoffset:0;opacity:0}}
+@media(prefers-reduced-motion:reduce){.pour-stream{animation:none;opacity:0}}
 .search-graph{padding:28px 42px 36px;overflow:auto}.search-graph svg{overflow:visible}.node-id{fill:#dce8f6!important;font-size:10px!important;letter-spacing:.06em!important;text-anchor:middle!important;dominant-baseline:auto!important}
 .graph-node.open-state .node-card{stroke:#3498db}.graph-node.next-expanded .node-card{stroke:#e74c3c;filter:drop-shadow(0 0 7px rgba(231,76,60,.55))}.graph-node.explored-state .node-card{stroke:#9aa3ad;opacity:.62}.graph-node.goal-state .node-card{stroke:#2ecc71;stroke-width:2.3;filter:drop-shadow(0 0 6px rgba(46,204,113,.45))}.graph-node.goal-path .node-card{stroke:#f1c40f;stroke-width:2.2;filter:drop-shadow(0 0 6px rgba(241,196,15,.45))}.graph-node.pruned-state .node-card{stroke:#9b59b6;stroke-width:2}.graph-legend{display:flex;gap:14px;flex-wrap:wrap;margin:-2px 0 12px;padding:0 3px;color:var(--muted);font:10px 'DM Mono',monospace}.graph-legend span{display:inline-flex;align-items:center;gap:6px}.legend-swatch{width:9px;height:9px;border:2px solid;border-radius:2px;display:inline-block}.legend-open{border-color:#3498db}.legend-next{border-color:#e74c3c}.legend-explored{border-color:#9aa3ad}.legend-goal{border-color:#2ecc71}.legend-path{border-color:#f1c40f}.legend-pruned{border-color:#9b59b6}
 /* Compact state previews rendered inside search-tree nodes. */
