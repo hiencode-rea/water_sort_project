@@ -17,6 +17,7 @@ let stepIndex = 0;
 
 // Biến lưu interval ID cho chức năng Auto Play (để có thể dừng lại)
 let autoPlayInterval = null;
+let isPouring = false;
 /** Return the deployed same-origin API or local Flask API. */
 function getApiUrl() {
     // Use the same-origin Vercel Function in production, but keep the
@@ -471,6 +472,37 @@ function renderTubes() {
     });
 }
 
+/** Vẽ một dòng nước cong chảy liên tục giữa hai miệng ống. */
+function animatePour(src, dst, color) {
+    const tubes = document.querySelectorAll('#tubesContainer .tube');
+    if (!tubes[src] || !tubes[dst] || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return Promise.resolve();
+
+    const sourceRect = tubes[src].getBoundingClientRect();
+    const targetRect = tubes[dst].getBoundingClientRect();
+    const x1 = sourceRect.left + sourceRect.width / 2;
+    const y1 = sourceRect.top + 5;
+    const x2 = targetRect.left + targetRect.width / 2;
+    const y2 = targetRect.top + 5;
+    const curveY = Math.min(y1, y2) - Math.min(70, Math.max(32, Math.abs(x2 - x1) * 0.18));
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    const stream = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    svg.setAttribute('class', 'pour-stream-layer');
+    svg.setAttribute('aria-hidden', 'true');
+    stream.setAttribute('d', `M ${x1} ${y1} Q ${(x1 + x2) / 2} ${curveY} ${x2} ${y2}`);
+    stream.setAttribute('stroke', color);
+    stream.setAttribute('class', 'pour-stream');
+    stream.setAttribute('pathLength', '1');
+    svg.appendChild(stream);
+    document.body.appendChild(svg);
+
+    return new Promise(function(resolve) {
+        window.setTimeout(function() {
+            svg.remove();
+            resolve();
+        }, 680);
+    });
+}
+
 /**
  * Xử lý khi người dùng click vào 1 ống nghiệm.
  * Thêm màu đang được chọn (selectedColor) vào vị trí trống thấp nhất của ống.
@@ -607,46 +639,48 @@ function solvePuzzle() {
  * Khi đổ: lấy từ ĐỈNH ống nguồn -> đặt lên ĐỈNH ống đích.
  */
 function nextStep() {
-    if (stepIndex >= solutionPath.length) return;
+    if (stepIndex >= solutionPath.length || isPouring) return;
 
-    // Backend trả về mỗi bước dạng [src, dst, amount, color]
-    const src = solutionPath[stepIndex][0];
-    const dst = solutionPath[stepIndex][1];
-    const amount = solutionPath[stepIndex][2];
-    const color = solutionPath[stepIndex][3];
+    const move = solutionPath[stepIndex];
+    const src = move[0];
+    const dst = move[1];
+    const amount = move[2];
+    const color = move[3];
 
-    // Mô phỏng đổ nước đúng luật: lấy từ ĐỈNH ống src -> đặt lên ĐỈNH ống dst
-    // Quy ước mảng: index 0 = đáy, index cuối = đỉnh. CSS column-reverse sẽ vẽ đúng thứ tự này.
-    for (let k = 0; k < amount; k++) {
-        // 1. Xóa 1 nấc màu từ ĐỈNH ống nguồn (duyệt ngược từ cuối lên, tìm phần tử khác '' đầu tiên)
-        for (let i = currentTubesState[src].length - 1; i >= 0; i--) {
-            if (currentTubesState[src][i] !== '') {
-                currentTubesState[src][i] = '';
-                break;
+    isPouring = true;
+    document.getElementById('btnNext').disabled = true;
+    document.getElementById('btnPrev').disabled = true;
+
+    animatePour(src, dst, color).then(function() {
+        for (let k = 0; k < amount; k++) {
+            for (let i = currentTubesState[src].length - 1; i >= 0; i--) {
+                if (currentTubesState[src][i] !== '') {
+                    currentTubesState[src][i] = '';
+                    break;
+                }
+            }
+            const dstEmptyIdx = currentTubesState[dst].indexOf('');
+            if (dstEmptyIdx !== -1) currentTubesState[dst][dstEmptyIdx] = color;
+        }
+
+        renderTubes();
+        document.getElementById('stepInfo').innerText =
+            'Bước ' + (stepIndex + 1) + '/' + solutionPath.length + ': Đổ từ Ống ' + (src + 1) + ' sang Ống ' + (dst + 1);
+        stepIndex++;
+        isPouring = false;
+        document.getElementById('btnPrev').disabled = stepIndex === 0;
+        document.getElementById('btnNext').disabled = stepIndex >= solutionPath.length;
+        syncGraphToSolutionStep();
+
+        if (stepIndex >= solutionPath.length) {
+            document.getElementById('stepInfo').innerText += ' - HOÀN THÀNH!';
+            if (autoPlayInterval) {
+                clearInterval(autoPlayInterval);
+                autoPlayInterval = null;
+                document.getElementById('btnAutoPlay').innerText = '\u25B6 Auto Play';
             }
         }
-
-        // 2. Thêm 1 nấc màu lên ĐỈNH ống đích.
-        // Mảng luôn có dạng [màu, màu, '', '']; index 0 là đáy,
-        // vì vậy ô trống đầu tiên chính là vị trí đỉnh tiếp theo.
-        const dstEmptyIdx = currentTubesState[dst].indexOf('');
-        if (dstEmptyIdx !== -1) {
-            currentTubesState[dst][dstEmptyIdx] = color;
-        }
-    }
-
-    renderTubes();
-    document.getElementById('stepInfo').innerText =
-        'Bước ' + (stepIndex + 1) + '/' + solutionPath.length + ': Đổ từ Ống ' + (src+1) + ' sang Ống ' + (dst+1);
-    stepIndex++;
-
-    document.getElementById('btnPrev').disabled = false;
-    syncGraphToSolutionStep();
-    if (stepIndex >= solutionPath.length) {
-        document.getElementById('stepInfo').innerText += ' - HOÀN THÀNH!';
-        document.getElementById('btnNext').disabled = true;
-        if (autoPlayInterval) { clearInterval(autoPlayInterval); autoPlayInterval = null; document.getElementById('btnAutoPlay').innerText = '\u25B6 Auto Play'; }
-    }
+    });
 }
 
 /**
@@ -654,7 +688,7 @@ function nextStep() {
  * Ngược lại: lấy từ ĐỈNH ống đích -> đặt lại ĐỈNH ống nguồn.
  */
 function prevStep() {
-    if (stepIndex <= 0) return;
+    if (stepIndex <= 0 || isPouring) return;
     stepIndex--;
 
     const src = solutionPath[stepIndex][0];
